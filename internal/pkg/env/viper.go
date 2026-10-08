@@ -12,11 +12,11 @@ var CliViper = viper.New()
 var ControllerViper = viper.New()
 var AgentViper = viper.New()
 
-var (
+const (
 	CliViperKeyPort = "controller.port"
 )
 
-var (
+const (
 	ControllerViperKeyPort    = "api.port"
 	ControllerViperKeyIsSetup = "is_setup"
 )

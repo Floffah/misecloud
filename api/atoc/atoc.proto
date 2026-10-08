@@ -23,8 +23,12 @@ service ControllerSetup {
 
 message GetIsSetupResponse {
     required bool is_setup = 1;
+    reserved 2;
+    reserved "tailscale_device_id";
 }
 
 message SetupRequest {
     required string port = 1;
+    reserved 2;
+    reserved "should_setup_serve";
 }

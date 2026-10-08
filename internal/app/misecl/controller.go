@@ -19,6 +19,8 @@ var ControllerCmd = &cobra.Command{
 }
 
 func InitController() {
+	SetupCmd.Flags().BoolP("yes", "y", false, "Automatically answer yes to all prompts")
+
 	ControllerCmd.AddCommand(SetupCmd)
 }
 
@@ -27,15 +29,22 @@ var SetupCmd = &cobra.Command{
 	Short: "Setup your mise cloud controller",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		var confirm bool
-		huh.NewConfirm().
-			Title("Unconfigured controllers like this one are insecure by default. Continue?").
-			Description("At the end of the process, this setup can optionally automatically configure gRPC TLS over Tailscale. In order to set this up you must enable enable HTTPS in your tailscale console. You can also do this manually later.").
-			Affirmative("Continue").
-			Negative("Cancel").
-			Value(&confirm).
-			WithButtonAlignment(lipgloss.Left).
-			Run()
+		alwaysContinue := cmd.Flags().Changed("yes")
+
+		if !alwaysContinue {
+			var confirm bool
+			huh.NewConfirm().
+				Title("Unconfigured controllers like this one are insecure by default. Continue?").
+				Description("This configures misecloud only. Configure Tailscale access and service hosting separately.").
+				Affirmative("Continue").
+				Negative("Cancel").
+				Value(&confirm).
+				WithButtonAlignment(lipgloss.Left).
+				Run()
+			if !confirm {
+				return
+			}
+		}
 
 		argHost, argPort, err := net.SplitHostPort(args[0])
 		if err != nil {
@@ -57,18 +66,18 @@ var SetupCmd = &cobra.Command{
 			panic(err)
 		}
 
-		if isSetupResponse.GetIsSetup() {
-			var confirm bool
+		if isSetupResponse.GetIsSetup() && !alwaysContinue {
+			var resetupConfirm bool
 			huh.NewConfirm().
 				Title("Controller is already set up. Continue?").
 				Description("This may overwrite existing configuration and you could lose data. This action is irreversible. If you just want to configure the controller, please use `misecl controller` subcommands instead.").
 				Affirmative("Continue").
 				Negative("Cancel").
-				Value(&confirm).
+				Value(&resetupConfirm).
 				WithButtonAlignment(lipgloss.Left).
 				Run()
 
-			if !confirm {
+			if !resetupConfirm {
 				//huh.NewNote().
 				//	Title("Setup cancelled").
 				//	Description("Controller setup has been cancelled. No changes have been made.").
@@ -80,18 +89,20 @@ var SetupCmd = &cobra.Command{
 		var setPort string = env.CliViper.GetString(env.CliViperKeyPort)
 		huh.NewInput().
 			Title("Controller Port").
-			Description("Enter the port for the controller to listen on (default: 50051)").
+			Description("Enter the controller listen port (default: 50051). Restart the controller if you change its port.").
 			Value(&setPort).
 			Run()
 
-		_, err = setupClient.SetUp(cmd.Context(), &atoc.SetupRequest{Port: &setPort})
+		_, err = setupClient.SetUp(cmd.Context(), &atoc.SetupRequest{
+			Port: &setPort,
+		})
 		if err != nil {
 			panic(err)
 		}
 
 		huh.NewNote().
 			Title("Setup complete").
-			Description("Controller setup has been completed successfully.").
+			Description("Controller setup has been completed successfully. Restart the controller if you changed its port.").
 			Run()
 	},
 }

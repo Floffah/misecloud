@@ -22,7 +22,7 @@ func main() {
 		panic(fmt.Errorf("could not initialise environment: %s", err.Error()))
 	}
 
-	tsDaemonStatus, err := tailscale.TSLocalClient.Status(ctx)
+	tsDaemonStatus, err := tailscale.LocalClient.Status(ctx)
 	if err != nil {
 		panic(fmt.Errorf("could not get Tailscale daemon status: %s", err.Error()))
 	}

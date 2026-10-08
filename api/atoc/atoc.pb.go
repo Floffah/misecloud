@@ -170,10 +170,11 @@ func (x *GetIsSetupResponse) GetIsSetup() bool {
 }
 
 type SetupRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Port          *string                `protobuf:"bytes,1,req,name=port" json:"port,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	Port             *string                `protobuf:"bytes,1,req,name=port" json:"port,omitempty"`
+	ShouldSetupServe *bool                  `protobuf:"varint,2,opt,name=should_setup_serve,json=shouldSetupServe" json:"should_setup_serve,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *SetupRequest) Reset() {
@@ -213,6 +214,13 @@ func (x *SetupRequest) GetPort() string {
 	return ""
 }
 
+func (x *SetupRequest) GetShouldSetupServe() bool {
+	if x != nil && x.ShouldSetupServe != nil {
+		return *x.ShouldSetupServe
+	}
+	return false
+}
+
 var File_atoc_proto protoreflect.FileDescriptor
 
 const file_atoc_proto_rawDesc = "" +
@@ -222,9 +230,10 @@ const file_atoc_proto_rawDesc = "" +
 	"\x13HealthCheckResponse\x12&\n" +
 	"\x06status\x18\x01 \x02(\x0e2\x0e.ServingStatusR\x06status\"/\n" +
 	"\x12GetIsSetupResponse\x12\x19\n" +
-	"\bis_setup\x18\x01 \x02(\bR\aisSetup\"\"\n" +
+	"\bis_setup\x18\x01 \x02(\bR\aisSetup\"P\n" +
 	"\fSetupRequest\x12\x12\n" +
-	"\x04port\x18\x01 \x02(\tR\x04port*:\n" +
+	"\x04port\x18\x01 \x02(\tR\x04port\x12,\n" +
+	"\x12should_setup_serve\x18\x02 \x01(\bR\x10shouldSetupServe*:\n" +
 	"\rServingStatus\x12\v\n" +
 	"\aUNKNOWN\x10\x00\x12\v\n" +
 	"\aSERVING\x10\x01\x12\x0f\n" +

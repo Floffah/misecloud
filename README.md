@@ -6,7 +6,7 @@ Completion:
 - CLI
     - [ ] Controller configuration
       - [ ] Controller setup
-      - [ ] Auto configure tailscale services/tls
+      - [ ] ~~Auto configure tailscale services/tls~~ - tried, too tedious for the user. manual is easier
     - [ ] Deployment
     - [ ] Monitoring
 - Controller
